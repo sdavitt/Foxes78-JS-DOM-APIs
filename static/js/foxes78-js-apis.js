@@ -30,14 +30,21 @@ form.addEventListener('submit', (event) => {
     // use that data - save the user's name in our users object if not already present
     if (users[name]){
         // user exists - display a welcome back message in html
+        document.querySelector('#welcome-message').innerHTML = `Welcome back, ${name}!`
     } else {
         // display new user welcome message
         // and add the user to users object
         users[name] = [];
+        document.querySelector('#welcome-message').innerHTML = `Welcome to CatFacts, ${name}!`
     }
+
+    // build a little 3 part conditional to use the wishes portion of the form data
+    wishes.toLowerCase().includes('yes') ? alert('Thank you for subscribing to CatFacts! Press ok to receive your CatFact!') :
+    wishes.toLowerCase().includes('no') ? alert("It's a real shame that you don't want a CatFact. Too bad. You're getting one anyway.") :
+    alert("I couldn't tell if you wanted a CatFact or not. So anyway, here's a CatFact.");
     
     // make the API call happen - call the API process function(s)
-    loadData();
+    loadData(name);
 
     // reset the form after we're done
     form.reset();
@@ -52,9 +59,15 @@ let getData = async () => {
 
 // an async process must remain async -> do stuff with our fact
 // does stuff with the data from the api call - aka makes an html
-let loadData = async () => {
+let loadData = async (user) => {
     let catFact = await getData();
     console.log(catFact); // we have access to the actual string - we can make an html element to be added to the page
-    let html = `<h3 class="newfact">${catFact}</h3>`;
-    document.querySelector('#catform').insertAdjacentHTML('afterend', html);
+    // add the catFact to the user's array
+    users[user].push(catFact);
+    console.log(users); // take a peek at the users object
+    // create the html element for the catFact
+    let html = document.createElement('h3');
+    html.className = 'newfact';
+    html.innerHTML = catFact;
+    document.querySelector('.fact').appendChild(html);
 }
